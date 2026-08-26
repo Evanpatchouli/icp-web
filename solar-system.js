@@ -132,6 +132,25 @@ function displaySemimajorAxis(astronomicalUnits) {
   return 58 + 76 * Math.log1p(astronomicalUnits * 2.2);
 }
 
+/** Create a repeatable pseudo-random generator for stable particle fields. */
+function createSeededRandom(seed) {
+  let state = seed >>> 0;
+  return () => {
+    state += 0x6d2b79f5;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Generate an approximately normal random value with the Box-Muller transform. */
+function randomNormal(random) {
+  const first = Math.max(random(), Number.EPSILON);
+  const second = random();
+  return Math.sqrt(-2 * Math.log(first)) * Math.cos(Math.PI * 2 * second);
+}
+
 /** Read the six approximate Keplerian elements for a simulated Julian date. */
 function orbitalElementsAt(planet, julianDate) {
   const centuries = (julianDate - J2000_JULIAN_DATE) / DAYS_PER_CENTURY;
@@ -235,13 +254,83 @@ function createSunGlow() {
   return sprite;
 }
 
-/** Populate a deep 3D star field around the orbital scene. */
+/** Build the flattened 30–55 AU population beyond Neptune. */
+function createKuiperBelt() {
+  const random = createSeededRandom(0x4b554950);
+  const positions = [];
+  const particleCount = 4200;
+
+  for (let index = 0; index < particleCount; index += 1) {
+    // Weight the classical 38–50 AU region while retaining the full NASA range.
+    const astronomicalUnits = random() < 0.72 ? 38 + random() * 12 : 30 + random() * 25;
+    const radius = displaySemimajorAxis(astronomicalUnits);
+    const longitude = random() * Math.PI * 2;
+    const latitude = THREE.MathUtils.clamp(randomNormal(random) * 6 * DEG, -20 * DEG, 20 * DEG);
+    const planarRadius = radius * Math.cos(latitude);
+    positions.push(
+      planarRadius * Math.cos(longitude),
+      radius * Math.sin(latitude),
+      planarRadius * Math.sin(longitude)
+    );
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  const belt = new THREE.Points(geometry, new THREE.PointsMaterial({
+    color: 0x9cafcf,
+    size: 0.9,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: 0.34,
+    depthWrite: false
+  }));
+  belt.name = "kuiper-belt-30-55-au";
+  return belt;
+}
+
+/** Build the theorized 2,000–100,000 AU spherical Oort Cloud shell. */
+function createOortCloud() {
+  const random = createSeededRandom(0x4f4f5254);
+  const positions = [];
+  const particleCount = 7200;
+  const logInner = Math.log(2000);
+  const logOuter = Math.log(100000);
+
+  for (let index = 0; index < particleCount; index += 1) {
+    const astronomicalUnits = Math.exp(logInner + random() * (logOuter - logInner));
+    const radius = displaySemimajorAxis(astronomicalUnits);
+    const longitude = random() * Math.PI * 2;
+    const vertical = random() * 2 - 1;
+    const planar = Math.sqrt(1 - vertical * vertical);
+    positions.push(
+      radius * planar * Math.cos(longitude),
+      radius * vertical,
+      radius * planar * Math.sin(longitude)
+    );
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  const cloud = new THREE.Points(geometry, new THREE.PointsMaterial({
+    color: 0xb7c9e8,
+    size: 1,
+    sizeAttenuation: false,
+    transparent: true,
+    opacity: 0.12,
+    depthWrite: false
+  }));
+  cloud.name = "oort-cloud-theoretical-2000-100000-au";
+  return cloud;
+}
+
+/** Populate a deep 3D star field outside the Oort Cloud model. */
 function createStarField() {
+  const random = createSeededRandom(0x53544152);
   const positions = [];
   for (let index = 0; index < 2600; index += 1) {
-    const radius = 850 + Math.random() * 900;
-    const theta = Math.random() * Math.PI * 2;
-    const z = Math.random() * 2 - 1;
+    const radius = 1900 + random() * 1200;
+    const theta = random() * Math.PI * 2;
+    const z = random() * 2 - 1;
     const planar = Math.sqrt(1 - z * z);
     positions.push(
       radius * planar * Math.cos(theta),
@@ -257,7 +346,8 @@ function createStarField() {
     sizeAttenuation: true,
     transparent: true,
     opacity: 0.82,
-    depthWrite: false
+    depthWrite: false,
+    fog: false
   }));
 }
 
@@ -333,6 +423,15 @@ function createPlanetObject(planet, textureLoader, labelsRoot, julianDate) {
   return { data: planet, body, sphere, clouds, label };
 }
 
+/** Create a projected HTML label for a modeled outer-solar-system region. */
+function createRegionLabel(labelsRoot, text, position) {
+  const label = document.createElement("span");
+  label.className = "planet-label region-label";
+  label.textContent = text;
+  labelsRoot.append(label);
+  return { label, position };
+}
+
 /**
  * Initialize the complete Three.js solar-system scene and its input controls.
  * This is the single application entry point.
@@ -343,7 +442,7 @@ function initSolarSystem() {
   const scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x03040d, 0.0005);
 
-  const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 2600);
+  const camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 4200);
   camera.position.set(0, 360, 610);
 
   const renderer = new THREE.WebGLRenderer({
@@ -368,7 +467,7 @@ function initSolarSystem() {
   controls.rotateSpeed = 0.48;
   controls.zoomSpeed = 0.72;
   controls.minDistance = 72;
-  controls.maxDistance = 1050;
+  controls.maxDistance = 1800;
   controls.minPolarAngle = 0.08;
   controls.maxPolarAngle = Math.PI - 0.08;
   controls.target.set(0, 0, 0);
@@ -390,7 +489,9 @@ function initSolarSystem() {
     controls.update();
   }, { passive: false });
 
-  scene.add(createStarField());
+  const kuiperBelt = createKuiperBelt();
+  const oortCloud = createOortCloud();
+  scene.add(createStarField(), kuiperBelt, oortCloud);
   scene.add(new THREE.AmbientLight(0x7183b4, 0.18));
   scene.add(new THREE.PointLight(0xffd2a0, 52000, 0, 2));
 
@@ -423,20 +524,47 @@ function initSolarSystem() {
   }
   app.dataset.planetCount = String(bodies.length);
   app.dataset.orbitModel = "jpl-j2000-keplerian";
+  app.dataset.kuiperBelt = "30-55-au";
+  app.dataset.oortCloud = "theoretical-2000-100000-au";
+
+  const kuiperRadius = displaySemimajorAxis(52);
+  const kuiperAngle = 2.45;
+  const oortLabelPosition = new THREE.Vector3(-0.68, 0.56, -0.48)
+    .normalize()
+    .multiplyScalar(displaySemimajorAxis(3500));
+  const regionLabels = [
+    createRegionLabel(
+      labelsRoot,
+      "柯伊伯带 · 30–55 AU",
+      new THREE.Vector3(
+        kuiperRadius * Math.cos(kuiperAngle),
+        26,
+        kuiperRadius * Math.sin(kuiperAngle)
+      )
+    ),
+    createRegionLabel(labelsRoot, "奥尔特云 · 理论模型", oortLabelPosition)
+  ];
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const clock = new THREE.Clock();
   const labelPoint = new THREE.Vector3();
   let simulatedSeconds = 0;
 
+  function placeLabel(label, worldPosition) {
+    labelPoint.copy(worldPosition).project(camera);
+    const visible = labelPoint.z > -1 && labelPoint.z < 1;
+    const x = (labelPoint.x * 0.5 + 0.5) * window.innerWidth;
+    const y = (-labelPoint.y * 0.5 + 0.5) * window.innerHeight;
+    label.style.opacity = visible ? "1" : "0";
+    label.style.transform = `translate(-50%, 12px) translate3d(${x}px, ${y}px, 0)`;
+  }
+
   function updateLabels() {
     for (const object of bodies) {
-      labelPoint.copy(object.body.position).project(camera);
-      const visible = labelPoint.z > -1 && labelPoint.z < 1;
-      const x = (labelPoint.x * 0.5 + 0.5) * window.innerWidth;
-      const y = (-labelPoint.y * 0.5 + 0.5) * window.innerHeight;
-      object.label.style.opacity = visible ? "1" : "0";
-      object.label.style.transform = `translate(-50%, 12px) translate3d(${x}px, ${y}px, 0)`;
+      placeLabel(object.label, object.body.position);
+    }
+    for (const region of regionLabels) {
+      placeLabel(region.label, region.position);
     }
   }
 
