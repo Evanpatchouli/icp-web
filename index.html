@@ -1,452 +1,254 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Evan Patchouli 的个人空间 —— 一场关于星空的静态展示。" />
-<title>Evan Patchouli | 个人空间</title>
-<style>
-  :root {
-    --bg-deep: #05060f;
-    --bg-mid: #0b1030;
-    --text-main: #e8ecff;
-    --text-dim: rgba(210, 220, 255, 0.55);
-    --accent: #7fa8ff;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Evan Patchouli 的个人空间 —— 一场关于星空的静态展示。" />
+    <title>Evan Patchouli | 个人空间</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg-deep: #05060f;
+        --bg-mid: #0b1030;
+        --text-main: #edf1ff;
+        --text-dim: rgba(210, 220, 255, 0.55);
+      }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
 
-  html, body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background:
-      radial-gradient(ellipse 120% 90% at 50% 110%, #1a1040 0%, transparent 55%),
-      radial-gradient(ellipse 90% 70% at 85% 10%, #0d1b4a 0%, transparent 50%),
-      radial-gradient(ellipse 80% 60% at 10% 20%, #160a33 0%, transparent 45%),
-      linear-gradient(180deg, var(--bg-mid) 0%, var(--bg-deep) 70%);
-    color: var(--text-main);
-    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        overscroll-behavior: none;
+        background:
+          radial-gradient(ellipse 120% 90% at 50% 110%, #1a1040 0%, transparent 55%),
+          radial-gradient(ellipse 90% 70% at 85% 10%, #0d1b4a 0%, transparent 50%),
+          radial-gradient(ellipse 80% 60% at 10% 20%, #160a33 0%, transparent 45%),
+          linear-gradient(180deg, var(--bg-mid) 0%, var(--bg-deep) 70%);
+        color: var(--text-main);
+        font-family: Inter, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
 
-  /* ================= 星空画布 ================= */
-  #stars {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    display: block;
-  }
+      #app,
+      #app canvas {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
 
-  /* ================= 星系场景 ================= */
-  .scene {
-    position: fixed;
-    inset: 0;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    perspective: 1400px;
-    perspective-origin: 50% 38%;
-  }
+      #app canvas {
+        display: block;
+        touch-action: none;
+        cursor: grab;
+      }
 
-  /* 倾斜的轨道平面 */
-  .solar {
-    position: relative;
-    width: 0;
-    height: 0;
-    transform-style: preserve-3d;
-    transform: rotateX(68deg);
-  }
+      #app canvas:active {
+        cursor: grabbing;
+      }
 
-  /* ---------- 太阳 ---------- */
-  .sun {
-    position: absolute;
-    top: 0; left: 0;
-    width: 110px; height: 110px;
-    margin: -55px 0 0 -55px;
-    border-radius: 50%;
-    transform: rotateX(-68deg); /* 立起来面对观众 */
-    background-image:
-      radial-gradient(circle at 35% 35%, rgba(255, 240, 200, 0.5) 0%, rgba(255, 160, 60, 0) 55%),
-      url("textures/2k_sun.jpg");
-    background-repeat: repeat-x;
-    background-size: 200% 100%;
-    box-shadow:
-      0 0 30px 8px rgba(255, 180, 60, 0.85),
-      0 0 90px 30px rgba(255, 120, 30, 0.45),
-      0 0 180px 70px rgba(255, 90, 20, 0.22);
-    animation:
-      sunPulse 6s ease-in-out infinite,
-      spin 60s linear infinite;
-  }
-  .sun::after {
-    content: "";
-    position: absolute;
-    inset: -14px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,200,90,0.35) 0%, transparent 70%);
-    animation: haloPulse 6s ease-in-out infinite reverse;
-  }
-  @keyframes sunPulse {
-    0%, 100% { transform: rotateX(-68deg) scale(1); filter: brightness(1); }
-    50%      { transform: rotateX(-68deg) scale(1.06); filter: brightness(1.12); }
-  }
-  @keyframes haloPulse {
-    0%, 100% { opacity: 0.7; }
-    50%      { opacity: 1; }
-  }
+      .overlay,
+      #labels {
+        position: fixed;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+      }
 
-  /* ---------- 轨道环 ---------- */
-  .orbit {
-    position: absolute;
-    top: 0; left: 0;
-    border: 1px solid rgba(150, 175, 255, 0.14);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-  }
-  .orbit::before {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    border-radius: 50%;
-    border: 1px solid rgba(150, 175, 255, 0.05);
-  }
+      .hero {
+        position: fixed;
+        z-index: 3;
+        top: 2%;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        pointer-events: none;
+      }
 
-  /* ---------- 行星 ---------- */
-  /* .pos 由 JS 驱动公转；.planet 负责立起 + 自转 */
-  .pos {
-    position: absolute;
-    top: 0; left: 0;
-    transform-style: preserve-3d;
-    will-change: transform;
-  }
-  .planet {
-    position: absolute;
-    top: 0; left: 0;
-    border-radius: 50%;
-    transform: rotateX(-68deg);
-    background-repeat: repeat-x;
-    background-size: 200% 100%;
-    animation: spin linear infinite;
-    box-shadow:
-      inset -6px -4px 12px rgba(0, 0, 0, 0.55),
-      inset 3px 3px 8px rgba(255, 255, 255, 0.15);
-  }
-  @keyframes spin {
-    from { background-position-x: 0; }
-    to   { background-position-x: -200%; }
-  }
+      .hero h1 {
+        font-size: clamp(34px, 6vw, 64px);
+        font-weight: 200;
+        letter-spacing: 0.35em;
+        text-indent: 0.35em;
+        background: linear-gradient(120deg, #ffffff 20%, #9db9ff 50%, #ffffff 80%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: shine 7s linear infinite;
+        text-shadow: 0 0 40px rgba(130, 165, 255, 0.25);
+      }
 
-  /* 云层覆盖层（仅地球启用） */
-  .planet.clouds::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background-image: var(--cloud);
-    background-repeat: repeat-x;
-    background-size: 200% 100%;
-    animation: spin linear infinite;
-    animation-duration: var(--cloudT, 20s);
-    mix-blend-mode: screen; /* 云层贴图为白底黑图，screen 模式只保留云 */
-    opacity: 0.85;
-    pointer-events: none;
-  }
-  /* 球体光影：高光 + 明暗交界，让行星有真实球体感 */
-  .planet::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 42%),
-      radial-gradient(circle at 72% 74%, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 60%);
-    pointer-events: none;
-  }
+      @keyframes shine {
+        to {
+          background-position: 200% center;
+        }
+      }
 
-  /* 行星环（四颗气态巨行星，样式由 JS 注入） */
-  .ring {
-    position: absolute;
-    top: 50%; left: 50%;
-    width: var(--ringW, 230%);
-    height: var(--ringW, 230%);
-    transform: translate(-50%, -50%) rotateX(var(--ringTilt, 72deg));
-    border-radius: 50%;
-    background: var(--ringBg);
-    opacity: var(--ringOp, 1);
-    pointer-events: none;
-  }
+      .hero p {
+        margin-top: 18px;
+        font-size: clamp(12px, 1.6vw, 15px);
+        letter-spacing: 0.5em;
+        text-indent: 0.5em;
+        color: var(--text-dim);
+        animation: fadeUp 2.4s ease 0.6s both;
+      }
 
-  /* ---------- 行星名字标签 ---------- */
-  .label {
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    color: var(--text-dim);
-    white-space: nowrap;
-    text-shadow: 0 0 8px rgba(0,0,0,0.8);
-    user-select: none;
-  }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-  /* ================= 文案 ================= */
-  .hero {
-    position: fixed;
-    z-index: 3;
-    top: 12%;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    pointer-events: none;
-  }
-  .hero h1 {
-    font-size: clamp(34px, 6vw, 64px);
-    font-weight: 200;
-    letter-spacing: 0.35em;
-    text-indent: 0.35em;
-    background: linear-gradient(120deg, #ffffff 20%, #9db9ff 50%, #ffffff 80%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: shine 7s linear infinite;
-    text-shadow: 0 0 40px rgba(130, 165, 255, 0.25);
-  }
-  @keyframes shine {
-    to { background-position: 200% center; }
-  }
-  .hero p {
-    margin-top: 18px;
-    font-size: clamp(12px, 1.6vw, 15px);
-    letter-spacing: 0.5em;
-    text-indent: 0.5em;
-    color: var(--text-dim);
-    animation: fadeUp 2.4s ease 0.6s both;
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+      .footer {
+        position: fixed;
+        z-index: 3;
+        bottom: 22px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        color: rgba(190, 200, 235, 0.45);
+        pointer-events: none;
+      }
 
-  /* ================= 页脚备案信息 ================= */
-  .footer {
-    position: fixed;
-    z-index: 3;
-    bottom: 22px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    font-size: 12px;
-    letter-spacing: 0.15em;
-    color: rgba(190, 200, 235, 0.45);
-    pointer-events: none;
-  }
-  .footer .credit {
-    display: block;
-    margin-top: 6px;
-    font-size: 10px;
-    color: rgba(190, 200, 235, 0.28);
-  }
+      .footer .credit {
+        display: block;
+        margin-top: 6px;
+        font-size: 10px;
+        color: rgba(190, 200, 235, 0.28);
+      }
 
-  /* 小屏适配：整体缩小星系 */
-  @media (max-width: 760px) {
-    .solar { transform: rotateX(68deg) scale(0.5); }
-  }
-  @media (max-width: 1200px) and (min-width: 761px) {
-    .solar { transform: rotateX(68deg) scale(0.75); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    * { animation-duration: 0.01s !important; animation-iteration-count: 1 !important; }
-  }
-</style>
-</head>
-<body>
+      .interaction-hint,
+      .scale-note {
+        position: absolute;
+        bottom: 78px;
+        margin: 0;
+        color: var(--text-dim);
+        font-size: 10px;
+        line-height: 1.7;
+        letter-spacing: 0.1em;
+      }
 
-  <!-- 星空画布 -->
-  <canvas id="stars"></canvas>
+      .interaction-hint {
+        right: 32px;
+        text-align: right;
+      }
 
-  <!-- 太阳系 -->
-  <div class="scene">
-    <div class="solar" id="solar">
-      <div class="sun"></div>
-      <!-- 轨道与行星由 JS 生成 -->
+      .scale-note {
+        left: 32px;
+        max-width: 430px;
+      }
+
+      .scale-note a {
+        color: rgba(205, 216, 255, 0.72);
+        text-decoration-color: rgba(205, 216, 255, 0.28);
+        pointer-events: auto;
+      }
+
+      .planet-label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 3px 6px;
+        color: rgba(224, 231, 255, 0.72);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        white-space: nowrap;
+        text-shadow:
+          0 1px 4px #02030b,
+          0 0 10px #02030b;
+        transition: opacity 160ms ease;
+        will-change: transform, opacity;
+      }
+
+      .loading {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: transparent;
+        color: var(--text-dim);
+        font-size: 10px;
+        letter-spacing: 0.26em;
+        transition:
+          opacity 500ms ease,
+          visibility 500ms ease;
+      }
+
+      body.ready .loading {
+        visibility: hidden;
+        opacity: 0;
+      }
+
+      @media (max-width: 720px) {
+        .interaction-hint {
+          right: 18px;
+          bottom: 130px;
+        }
+        .scale-note {
+          left: 18px;
+          bottom: 130px;
+          max-width: 58vw;
+          font-size: 8px;
+        }
+        .planet-label {
+          font-size: 8px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation-duration: 0.01s !important;
+          animation-iteration-count: 1 !important;
+        }
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.min.js",
+          "three/addons/": "./vendor/addons/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main id="app" aria-label="可交互的三维太阳系"></main>
+    <div id="labels" aria-hidden="true"></div>
+
+    <div class="overlay">
+      <div class="hero">
+        <h1>EVAN PATCHOULI</h1>
+        <p>一 方 星 空 · 静 待 启 程</p>
+      </div>
+
+      <p class="scale-note">
+        轨道形状、倾角、方向及相对周期依据 JPL 轨道根数；为便于观察，轨道间距与天体尺寸采用不同的可视化比例。
+        <a href="https://ssd.jpl.nasa.gov/planets/approx_pos.html" target="_blank" rel="noreferrer">数据说明</a>
+      </p>
+
+      <p class="interaction-hint">拖拽旋转视角<br />滚轮缩放距离</p>
+      <div class="loading" role="status">正在建立太阳系</div>
     </div>
-  </div>
 
-  <!-- 标题文案 -->
-  <div class="hero">
-    <h1>EVAN PATCHOULI</h1>
-    <p>一 方 星 空 · 静 待 启 程</p>
-  </div>
+    <div class="footer">
+      © 2026 Evan Patchouli 个人空间&nbsp;&nbsp;|&nbsp;&nbsp;粤ICP备XXXXXXXX号
+      <span class="credit">Planet textures: Solar System Scope (CC BY 4.0), based on NASA/JPL imagery</span>
+    </div>
 
-  <!-- 备案信息（请替换为真实备案号） -->
-  <div class="footer">
-    © 2026 Evan Patchouli 个人空间&nbsp;&nbsp;|&nbsp;&nbsp;粤ICP备XXXXXXXX号
-    <span class="credit">Planet textures: Solar System Scope (CC BY 4.0), based on NASA/JPL imagery</span>
-  </div>
-
-<script>
-(function () {
-  "use strict";
-
-  /* ================= 星空 + 流星 ================= */
-  var canvas = document.getElementById("stars");
-  var ctx = canvas.getContext("2d");
-  var W, H, stars = [], meteors = [];
-
-  function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-  window.addEventListener("resize", resize);
-  resize();
-
-  var STAR_COUNT = Math.min(420, Math.floor(W * H / 3200));
-  for (var i = 0; i < STAR_COUNT; i++) {
-    stars.push({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: Math.random() * 1.4 + 0.2,
-      base: Math.random() * 0.5 + 0.3,
-      speed: Math.random() * 0.02 + 0.004,
-      phase: Math.random() * Math.PI * 2
-    });
-  }
-
-  function spawnMeteor() {
-    var fromLeft = Math.random() < 0.5;
-    meteors.push({
-      x: Math.random() * W * 0.8 + W * 0.1,
-      y: Math.random() * H * 0.3,
-      vx: (fromLeft ? 1 : -1) * (Math.random() * 3 + 4),
-      vy: Math.random() * 2 + 2.5,
-      life: 1
-    });
-  }
-  setInterval(function () {
-    if (meteors.length < 3 && Math.random() < 0.6) spawnMeteor();
-  }, 2200);
-
-  var t = 0;
-  function drawStars() {
-    t += 1;
-    ctx.clearRect(0, 0, W, H);
-
-    for (var i = 0; i < stars.length; i++) {
-      var s = stars[i];
-      var tw = s.base + Math.sin(s.phase + t * s.speed) * 0.35;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255,255,255," + Math.max(0.05, tw) + ")";
-      ctx.fill();
-    }
-
-    for (var m = meteors.length - 1; m >= 0; m--) {
-      var me = meteors[m];
-      me.x += me.vx;
-      me.y += me.vy;
-      me.life -= 0.012;
-      if (me.life <= 0 || me.y > H) { meteors.splice(m, 1); continue; }
-      var grad = ctx.createLinearGradient(me.x, me.y, me.x - me.vx * 12, me.y - me.vy * 12);
-      grad.addColorStop(0, "rgba(255,255,255," + 0.9 * me.life + ")");
-      grad.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 1.6;
-      ctx.beginPath();
-      ctx.moveTo(me.x, me.y);
-      ctx.lineTo(me.x - me.vx * 12, me.y - me.vy * 12);
-      ctx.stroke();
-    }
-    requestAnimationFrame(drawStars);
-  }
-  drawStars();
-
-  /* ================= 八大行星 ================= */
-  // 贴图：Solar System Scope (CC BY 4.0)，等距圆柱投影，水平无缝
-  // 名称 / 轨道半径 / 行星直径 / 公转周期(秒) / 自转周期(秒) / 初始角
-  var planets = [
-    { name: "水星 Mercury",   orbit: 150, size: 18, rev: 10,  rot: 12, a0: 0.0, tex: "textures/2k_mercury.jpg" },
-    { name: "金星 Venus",     orbit: 200, size: 26, rev: 16,  rot: 22, a0: 1.1, tex: "textures/2k_venus_surface.jpg", retro: true },
-    { name: "地球 Earth",     orbit: 255, size: 30, rev: 24,  rot: 14, a0: 2.4, tex: "textures/2k_earth_daymap.jpg", clouds: "textures/2k_earth_clouds.jpg" },
-    { name: "火星 Mars",      orbit: 305, size: 22, rev: 33,  rot: 15, a0: 3.6, tex: "textures/2k_mars.jpg" },
-    { name: "木星 Jupiter",   orbit: 385, size: 64, rev: 55,  rot: 8,  a0: 4.4, tex: "textures/2k_jupiter.jpg",
-      ring: { w: "200%", tilt: "72deg", op: 0.55,
-        bg: "radial-gradient(circle, transparent 72%, rgba(205,155,105,0.16) 78%, rgba(185,135,90,0.30) 82%, rgba(205,155,105,0.12) 86%, transparent 90%)" } },
-    { name: "土星 Saturn",    orbit: 470, size: 56, rev: 72,  rot: 9,  a0: 5.3, tex: "textures/2k_saturn.jpg",
-      ring: { w: "235%", tilt: "72deg", op: 1,
-        bg: "radial-gradient(circle, transparent 56%, rgba(200,180,140,0.28) 59%, rgba(226,205,160,0.75) 63%, rgba(190,165,120,0.45) 68%, rgba(120,100,70,0.20) 71%, rgba(240,225,190,0.80) 75%, rgba(210,185,140,0.55) 81%, rgba(170,145,100,0.30) 86%, transparent 90%)" } },
-    { name: "天王星 Uranus",  orbit: 545, size: 38, rev: 92,  rot: 12, a0: 0.7, tex: "textures/2k_uranus.jpg", retro: true,
-      ring: { w: "215%", tilt: "18deg", op: 0.7,
-        bg: "radial-gradient(circle, transparent 74%, rgba(150,195,200,0.30) 79%, rgba(175,215,220,0.55) 81%, rgba(150,195,200,0.25) 84%, transparent 88%)" } },
-    { name: "海王星 Neptune", orbit: 615, size: 36, rev: 112, rot: 11, a0: 2.0, tex: "textures/2k_neptune.jpg",
-      ring: { w: "200%", tilt: "70deg", op: 0.5,
-        bg: "radial-gradient(circle, transparent 74%, rgba(115,145,215,0.20) 80%, rgba(135,165,230,0.38) 83%, rgba(115,145,215,0.15) 87%, transparent 90%)" } }
-  ];
-
-  var solar = document.getElementById("solar");
-  var nodes = [];
-
-  planets.forEach(function (p) {
-    // 轨道环
-    var orbit = document.createElement("div");
-    orbit.className = "orbit";
-    orbit.style.width = orbit.style.height = (p.orbit * 2) + "px";
-    solar.appendChild(orbit);
-
-    // 公转定位容器
-    var pos = document.createElement("div");
-    pos.className = "pos";
-
-    // 行星本体（真实贴图 + 自转）
-    var el = document.createElement("div");
-    el.className = "planet" + (p.clouds ? " clouds" : "");
-    el.style.width = el.style.height = p.size + "px";
-    el.style.margin = (-p.size / 2) + "px 0 0 " + (-p.size / 2) + "px";
-    el.style.animationDuration = p.rot + "s";
-    el.style.backgroundImage = "url(" + p.tex + ")";
-    if (p.retro) el.style.animationDirection = "reverse"; // 金星、天王星逆向自转
-    if (p.clouds) {
-      el.style.setProperty("--cloud", "url(" + p.clouds + ")");
-      el.style.setProperty("--cloudT", (p.rot * 0.8) + "s"); // 云层比地表转得稍快
-    }
-
-    if (p.ring) {
-      var ring = document.createElement("div");
-      ring.className = "ring";
-      ring.style.setProperty("--ringW", p.ring.w);
-      ring.style.setProperty("--ringTilt", p.ring.tilt);
-      ring.style.setProperty("--ringBg", p.ring.bg);
-      ring.style.setProperty("--ringOp", p.ring.op);
-      el.appendChild(ring);
-    }
-
-    var label = document.createElement("div");
-    label.className = "label";
-    label.textContent = p.name;
-    el.appendChild(label);
-
-    pos.appendChild(el);
-    solar.appendChild(pos);
-    nodes.push({ data: p, pos: pos });
-  });
-
-  /* 公转动画：JS 驱动角度，行星随轨道平面倾斜 */
-  var start = performance.now();
-  function revolve(now) {
-    var elapsed = (now - start) / 1000;
-    for (var i = 0; i < nodes.length; i++) {
-      var p = nodes[i].data;
-      var ang = p.a0 + (elapsed / p.rev) * Math.PI * 2;
-      // 在轨道平面（已 rotateX 倾斜）内绕 Z 轴旋转
-      nodes[i].pos.style.transform =
-        "rotateZ(" + ang + "rad) translateX(" + p.orbit + "px) rotateZ(" + (-ang) + "rad)";
-    }
-    requestAnimationFrame(revolve);
-  }
-  requestAnimationFrame(revolve);
-})();
-</script>
-</body>
+    <noscript>此页面需要启用 JavaScript 才能显示三维太阳系。</noscript>
+    <script type="module" src="./solar-system.js"></script>
+  </body>
 </html>
