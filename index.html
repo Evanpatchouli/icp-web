@@ -99,6 +99,16 @@
         animation: fadeUp 2.4s ease 0.6s both;
       }
 
+      .hero p.subtitle-transition {
+        animation: none;
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
+
+      .hero p.fade-out {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
       @keyframes fadeUp {
         from {
           opacity: 0;
@@ -231,7 +241,7 @@
     <div class="overlay">
       <div class="hero">
         <h1>EVAN PATCHOULI</h1>
-        <p>一 方 星 空 · 静 待 启 程</p>
+        <p id="subtitle">一 方 星 空 · 静 待 启 程</p>
       </div>
 
       <p class="scale-note">
@@ -249,6 +259,37 @@
     </div>
 
     <noscript>此页面需要启用 JavaScript 才能显示三维太阳系。</noscript>
+    <script>
+      // 副标题轮换
+      (function () {
+        const subtitles = ["一 方 星 空 · 静 待 启 程", "仰 望 星 空 · 跬 步 千 里", "星 河 烂 漫 · 不 尽 于 此"];
+        let currentIndex = 0;
+        const subtitleElement = document.getElementById("subtitle");
+        let firstChange = true;
+
+        function changeSubtitle() {
+          // 第一次切换时，将 animation 切换为 transition
+          if (firstChange) {
+            subtitleElement.classList.add("subtitle-transition");
+            firstChange = false;
+          }
+
+          // 淡出
+          subtitleElement.classList.add("fade-out");
+
+          setTimeout(() => {
+            // 切换文本
+            currentIndex = (currentIndex + 1) % subtitles.length;
+            subtitleElement.textContent = subtitles[currentIndex];
+
+            // 淡入
+            subtitleElement.classList.remove("fade-out");
+          }, 800); // 与 CSS transition 时间一致
+        }
+
+        setInterval(changeSubtitle, 10000);
+      })();
+    </script>
     <script type="module" src="./solar-system.js"></script>
   </body>
 </html>
