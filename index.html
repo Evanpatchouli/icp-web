@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Evan Patchouli 的个人空间 —— 一场关于星空的静态展示。" />
-    <title>Evan Patchouli | 个人空间</title>
+    <meta name="description" content="Evan Patchouli Space —— 一场关于星空的动态展示。" />
+    <title>Evan Patchouli Space</title>
     <style>
       :root {
         color-scheme: dark;
@@ -81,7 +81,11 @@
         background-clip: text;
         color: transparent;
         animation: shine 7s linear infinite;
-        text-shadow: 0 0 40px rgba(130, 165, 255, 0.25);
+        text-shadow:
+          0 0 40px rgba(130, 165, 255, 0.5),
+          0 0 20px rgba(157, 185, 255, 0.4),
+          0 0 10px rgba(255, 255, 255, 0.3);
+        filter: drop-shadow(0 0 8px rgba(157, 185, 255, 0.6));
       }
 
       @keyframes shine {
@@ -97,11 +101,18 @@
         text-indent: 0.5em;
         color: var(--text-dim);
         animation: fadeUp 2.4s ease 0.6s both;
+        text-shadow:
+          0 0 20px rgba(130, 165, 255, 0.35),
+          0 0 10px rgba(157, 185, 255, 0.25),
+          0 0 5px rgba(255, 255, 255, 0.2);
+        filter: drop-shadow(0 0 6px rgba(157, 185, 255, 0.4));
       }
 
       .hero p.subtitle-transition {
         animation: none;
-        transition: opacity 0.8s ease, transform 0.8s ease;
+        transition:
+          opacity 0.8s ease,
+          transform 0.8s ease;
       }
 
       .hero p.fade-out {
@@ -123,7 +134,7 @@
       .footer {
         position: fixed;
         z-index: 3;
-        bottom: 22px;
+        bottom: 0;
         left: 0;
         width: 100%;
         text-align: center;
@@ -131,6 +142,10 @@
         letter-spacing: 0.15em;
         color: rgba(190, 200, 235, 0.45);
         pointer-events: none;
+        padding: 16px 0 20px 0;
+        backdrop-filter: blur(12px) saturate(1.2) brightness(0.9);
+        -webkit-backdrop-filter: blur(12px) saturate(1.2) brightness(0.9);
+        background: linear-gradient(to top, rgba(0, 0, 20, 0.15), transparent);
       }
 
       .footer .credit {
@@ -254,7 +269,7 @@
     </div>
 
     <div class="footer">
-      © 2026 Evan Patchouli 个人空间&nbsp;&nbsp;|&nbsp;&nbsp;粤ICP备XXXXXXXX号
+      © 2026 Evan Patchouli Space&nbsp;&nbsp;|&nbsp;&nbsp;粤ICP备XXXXXXXX号
       <span class="credit">Planet textures: Solar System Scope (CC BY 4.0), based on NASA/JPL imagery</span>
     </div>
 
