@@ -606,8 +606,11 @@ function initSolarSystem() {
 
   const initialJulianDate = toJulianDate(new Date());
   const bodies = [];
+  const orbits = [];
   for (const planet of PLANETS) {
-    scene.add(createOrbitLine(planet, initialJulianDate));
+    const orbit = createOrbitLine(planet, initialJulianDate);
+    scene.add(orbit);
+    orbits.push(orbit);
     const object = createPlanetObject(planet, textureLoader, labelsRoot, initialJulianDate);
     object.body.position.copy(planetPositionAt(planet, initialJulianDate));
     scene.add(object.body);
@@ -663,10 +666,99 @@ function initSolarSystem() {
     }
   }
 
+  // 鼠标交互：检测悬停的行星
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  let hoveredPlanetIndex = -1;
+  let currentSpeedMultiplier = 1;
+  let targetSpeedMultiplier = 1;
+  const planetScales = bodies.map(() => 1); // 记录每个行星的当前缩放
+  const targetPlanetScales = bodies.map(() => 1); // 记录目标缩放
+  const orbitOpacities = orbits.map((_, i) => (bodies[i].data.id === "earth" ? 0.24 : 0.15)); // 记录轨道当前透明度
+  const targetOrbitOpacities = orbits.map((_, i) => (bodies[i].data.id === "earth" ? 0.24 : 0.15)); // 记录目标透明度
+
+  function onMouseMove(event) {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const spheres = bodies.map((obj) => obj.sphere);
+    const intersects = raycaster.intersectObjects(spheres, false);
+
+    const newHoveredIndex = intersects.length > 0 ? spheres.indexOf(intersects[0].object) : -1;
+
+    if (newHoveredIndex !== hoveredPlanetIndex) {
+      // 恢复之前高亮的轨道和行星缩放
+      if (hoveredPlanetIndex !== -1) {
+        targetOrbitOpacities[hoveredPlanetIndex] = bodies[hoveredPlanetIndex].data.id === "earth" ? 0.24 : 0.15;
+        renderer.domElement.style.cursor = "grab";
+        targetPlanetScales[hoveredPlanetIndex] = 1; // 恢复原始大小
+      }
+
+      hoveredPlanetIndex = newHoveredIndex;
+
+      // 高亮新悬停的轨道、设置目标速度和缩放
+      if (hoveredPlanetIndex !== -1) {
+        targetOrbitOpacities[hoveredPlanetIndex] = 0.72;
+        renderer.domElement.style.cursor = "pointer";
+        targetSpeedMultiplier = 0.1; // 减速到 1/10
+        targetPlanetScales[hoveredPlanetIndex] = 1.5; // 放大 1.5 倍
+      } else {
+        targetSpeedMultiplier = 1; // 恢复正常速度
+      }
+    }
+  }
+
+  renderer.domElement.addEventListener("mousemove", onMouseMove);
+
+  // 贝塞尔缓动函数：CSS cubic-bezier(0.4, 0.0, 0.2, 1) - Material Design 标准
+  function cubicBezier(t, p1, p2) {
+    const cx = 3 * p1;
+    const bx = 3 * (p2 - p1) - cx;
+    const ax = 1 - cx - bx;
+    const cy = 3 * p1;
+    const by = 3 * (p2 - p1) - cy;
+    const ay = 1 - cy - by;
+
+    function sampleCurveX(t) {
+      return ((ax * t + bx) * t + cx) * t;
+    }
+
+    function sampleCurveY(t) {
+      return ((ay * t + by) * t + cy) * t;
+    }
+
+    function solveCurveX(x) {
+      let t2 = x;
+      for (let i = 0; i < 8; i++) {
+        const x2 = sampleCurveX(t2) - x;
+        if (Math.abs(x2) < 0.001) return t2;
+        const d2 = (3 * ax * t2 + 2 * bx) * t2 + cx;
+        if (Math.abs(d2) < 0.000001) break;
+        t2 -= x2 / d2;
+      }
+      return t2;
+    }
+
+    return sampleCurveY(solveCurveX(t));
+  }
+
   function animate() {
     requestAnimationFrame(animate);
     const delta = Math.min(clock.getDelta(), 0.05);
-    if (!reducedMotion) simulatedSeconds += delta;
+
+    // 速度渐变：使用 ease-in-out 贝塞尔曲线
+    const speedTransitionSpeed = delta / 0.2;
+    if (Math.abs(currentSpeedMultiplier - targetSpeedMultiplier) > 0.001) {
+      const diff = targetSpeedMultiplier - currentSpeedMultiplier;
+      const progress = Math.min(speedTransitionSpeed * 5, 1);
+      const eased = cubicBezier(progress, 0.4, 0.2); // ease-in-out
+      currentSpeedMultiplier += diff * eased * 0.2;
+    } else {
+      currentSpeedMultiplier = targetSpeedMultiplier;
+    }
+
+    if (!reducedMotion) simulatedSeconds += delta * currentSpeedMultiplier;
     const julianDate = initialJulianDate + simulatedSeconds * SIMULATED_DAYS_PER_SECOND;
 
     // 更新各区域带透明度：相机距离越远，越清晰
@@ -676,31 +768,58 @@ function initSolarSystem() {
     const asteroidInnerRadius = displaySemimajorAxis(2.1);
     const asteroidOpacity = THREE.MathUtils.clamp((cameraDistance - 100) / (asteroidInnerRadius - 100), 0.2, 1);
     asteroidBelt.material.opacity = asteroidOpacity;
-    if (!reducedMotion) asteroidBelt.rotation.y += delta * 0.012;
+    if (!reducedMotion) asteroidBelt.rotation.y += delta * 0.012 * currentSpeedMultiplier;
 
     // 柯伊伯带 (30-55 AU, 显示半径约 320-350)
     const kuiperInnerRadius = displaySemimajorAxis(30);
     const kuiperOpacity = THREE.MathUtils.clamp((cameraDistance - 200) / (kuiperInnerRadius - 200), 0.15, 1);
     kuiperBelt.material.opacity = kuiperOpacity;
-    if (!reducedMotion) kuiperBelt.rotation.y += delta * 0.008;
+    if (!reducedMotion) kuiperBelt.rotation.y += delta * 0.008 * currentSpeedMultiplier;
 
     // 奥尔特云 (2000-100000 AU, 显示半径约 695-993)
     const oortInnerRadius = displaySemimajorAxis(2000);
     const oortOpacity = THREE.MathUtils.clamp((cameraDistance - 400) / (oortInnerRadius - 400), 0.15, 1);
     oortCloud.material.opacity = oortOpacity;
-    if (!reducedMotion) oortCloud.rotation.y += delta * 0.003;
+    if (!reducedMotion) oortCloud.rotation.y += delta * 0.003 * currentSpeedMultiplier;
+
+    // 更新行星缩放：使用 ease-out 贝塞尔曲线
+    for (let i = 0; i < bodies.length; i++) {
+      if (Math.abs(planetScales[i] - targetPlanetScales[i]) > 0.001) {
+        const diff = targetPlanetScales[i] - planetScales[i];
+        const progress = Math.min(speedTransitionSpeed * 5, 1);
+        const eased = cubicBezier(progress, 0.0, 0.2); // ease-out
+        planetScales[i] += diff * eased * 0.2;
+      } else {
+        planetScales[i] = targetPlanetScales[i];
+      }
+      bodies[i].body.scale.setScalar(planetScales[i]);
+    }
+
+    // 更新轨道透明度：使用 ease-out 贝塞尔曲线
+    for (let i = 0; i < orbits.length; i++) {
+      if (Math.abs(orbitOpacities[i] - targetOrbitOpacities[i]) > 0.001) {
+        const diff = targetOrbitOpacities[i] - orbitOpacities[i];
+        const progress = Math.min(speedTransitionSpeed * 5, 1);
+        const eased = cubicBezier(progress, 0.0, 0.2); // ease-out
+        orbitOpacities[i] += diff * eased * 0.2;
+      } else {
+        orbitOpacities[i] = targetOrbitOpacities[i];
+      }
+      orbits[i].material.opacity = orbitOpacities[i];
+    }
 
     for (const object of bodies) {
       object.body.position.copy(planetPositionAt(object.data, julianDate));
       if (!reducedMotion) {
         const rotationDirection = Math.sign(object.data.rotationHours);
         const rotationPeriod = Math.abs(object.data.rotationHours) / ROTATION_HOURS_PER_SECOND;
-        object.sphere.rotation.y += (rotationDirection * delta * Math.PI * 2) / rotationPeriod;
-        if (object.clouds) object.clouds.rotation.y += (delta * Math.PI * 2) / (rotationPeriod * 0.93);
+        object.sphere.rotation.y += (rotationDirection * delta * Math.PI * 2 * currentSpeedMultiplier) / rotationPeriod;
+        if (object.clouds)
+          object.clouds.rotation.y += (delta * Math.PI * 2 * currentSpeedMultiplier) / (rotationPeriod * 0.93);
       }
     }
 
-    if (!reducedMotion) sun.rotation.y += delta * 0.035;
+    if (!reducedMotion) sun.rotation.y += delta * 0.035 * currentSpeedMultiplier;
     controls.update();
     updateLabels();
     renderer.render(scene, camera);
