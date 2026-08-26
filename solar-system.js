@@ -12,89 +12,154 @@ const ECLIPTIC_NORMAL = new THREE.Vector3(0, 1, 0);
 // Each pair is [J2000 value, change per Julian century].
 const PLANETS = [
   {
-    id: "mercury", name: "水星 Mercury", texture: "textures/2k_mercury.jpg",
-    radius: 2.3, rotationHours: 1407.6, axialTilt: 0.034,
+    id: "mercury",
+    name: "水星 Mercury",
+    texture: "textures/2k_mercury.jpg",
+    radius: 2.3,
+    rotationHours: 1407.6,
+    axialTilt: 0.034,
     elements: {
-      a: [0.38709927, 0.00000037], e: [0.20563593, 0.00001906], i: [7.00497902, -0.00594749],
-      L: [252.25032350, 149472.67411175], peri: [77.45779628, 0.16047689], node: [48.33076593, -0.12534081]
-    }
+      a: [0.38709927, 0.00000037],
+      e: [0.20563593, 0.00001906],
+      i: [7.00497902, -0.00594749],
+      L: [252.2503235, 149472.67411175],
+      peri: [77.45779628, 0.16047689],
+      node: [48.33076593, -0.12534081],
+    },
   },
   {
-    id: "venus", name: "金星 Venus", texture: "textures/2k_venus_surface.jpg",
-    radius: 4.6, rotationHours: -5832.5, axialTilt: 177.36,
+    id: "venus",
+    name: "金星 Venus",
+    texture: "textures/2k_venus_surface.jpg",
+    radius: 4.6,
+    rotationHours: -5832.5,
+    axialTilt: 177.36,
     elements: {
-      a: [0.72333566, 0.00000390], e: [0.00677672, -0.00004107], i: [3.39467605, -0.00078890],
-      L: [181.97909950, 58517.81538729], peri: [131.60246718, 0.00268329], node: [76.67984255, -0.27769418]
-    }
+      a: [0.72333566, 0.0000039],
+      e: [0.00677672, -0.00004107],
+      i: [3.39467605, -0.0007889],
+      L: [181.9790995, 58517.81538729],
+      peri: [131.60246718, 0.00268329],
+      node: [76.67984255, -0.27769418],
+    },
   },
   {
-    id: "earth", name: "地球 Earth", texture: "textures/2k_earth_daymap.jpg",
-    clouds: "textures/2k_earth_clouds.jpg", radius: 5, rotationHours: 23.9345, axialTilt: 23.439,
+    id: "earth",
+    name: "地球 Earth",
+    texture: "textures/2k_earth_daymap.jpg",
+    clouds: "textures/2k_earth_clouds.jpg",
+    radius: 5,
+    rotationHours: 23.9345,
+    axialTilt: 23.439,
     elements: {
-      a: [1.00000261, 0.00000562], e: [0.01671123, -0.00004392], i: [-0.00001531, -0.01294668],
-      L: [100.46457166, 35999.37244981], peri: [102.93768193, 0.32327364], node: [0, 0]
-    }
+      a: [1.00000261, 0.00000562],
+      e: [0.01671123, -0.00004392],
+      i: [-0.00001531, -0.01294668],
+      L: [100.46457166, 35999.37244981],
+      peri: [102.93768193, 0.32327364],
+      node: [0, 0],
+    },
   },
   {
-    id: "mars", name: "火星 Mars", texture: "textures/2k_mars.jpg",
-    radius: 3.3, rotationHours: 24.6229, axialTilt: 25.19,
+    id: "mars",
+    name: "火星 Mars",
+    texture: "textures/2k_mars.jpg",
+    radius: 3.3,
+    rotationHours: 24.6229,
+    axialTilt: 25.19,
     elements: {
-      a: [1.52371034, 0.00001847], e: [0.09339410, 0.00007882], i: [1.84969142, -0.00813131],
-      L: [-4.55343205, 19140.30268499], peri: [-23.94362959, 0.44441088], node: [49.55953891, -0.29257343]
-    }
+      a: [1.52371034, 0.00001847],
+      e: [0.0933941, 0.00007882],
+      i: [1.84969142, -0.00813131],
+      L: [-4.55343205, 19140.30268499],
+      peri: [-23.94362959, 0.44441088],
+      node: [49.55953891, -0.29257343],
+    },
   },
   {
-    id: "jupiter", name: "木星 Jupiter", texture: "textures/2k_jupiter.jpg",
-    radius: 11.5, rotationHours: 9.925, axialTilt: 3.13,
+    id: "jupiter",
+    name: "木星 Jupiter",
+    texture: "textures/2k_jupiter.jpg",
+    radius: 11.5,
+    rotationHours: 9.925,
+    axialTilt: 3.13,
     rings: [
       { inner: 1.71, outer: 1.82, color: 0x9a7658, opacity: 0.14 },
-      { inner: 1.82, outer: 3.1, color: 0x9a7658, opacity: 0.025 }
+      { inner: 1.82, outer: 3.1, color: 0x9a7658, opacity: 0.025 },
     ],
     elements: {
-      a: [5.20288700, -0.00011607], e: [0.04838624, -0.00013253], i: [1.30439695, -0.00183714],
-      L: [34.39644051, 3034.74612775], peri: [14.72847983, 0.21252668], node: [100.47390909, 0.20469106]
-    }
+      a: [5.202887, -0.00011607],
+      e: [0.04838624, -0.00013253],
+      i: [1.30439695, -0.00183714],
+      L: [34.39644051, 3034.74612775],
+      peri: [14.72847983, 0.21252668],
+      node: [100.47390909, 0.20469106],
+    },
   },
   {
-    id: "saturn", name: "土星 Saturn", texture: "textures/2k_saturn.jpg",
-    radius: 10, rotationHours: 10.656, axialTilt: 26.73,
+    id: "saturn",
+    name: "土星 Saturn",
+    texture: "textures/2k_saturn.jpg",
+    radius: 10,
+    rotationHours: 10.656,
+    axialTilt: 26.73,
     rings: [
       { inner: 1.24, outer: 1.52, color: 0x9b896c, opacity: 0.25 },
       { inner: 1.53, outer: 1.95, color: 0xd8c69b, opacity: 0.67 },
-      { inner: 1.97, outer: 2.27, color: 0xb8a57e, opacity: 0.48 }
+      { inner: 1.97, outer: 2.27, color: 0xb8a57e, opacity: 0.48 },
     ],
     elements: {
-      a: [9.53667594, -0.00125060], e: [0.05386179, -0.00050991], i: [2.48599187, 0.00193609],
-      L: [49.95424423, 1222.49362201], peri: [92.59887831, -0.41897216], node: [113.66242448, -0.28867794]
-    }
+      a: [9.53667594, -0.0012506],
+      e: [0.05386179, -0.00050991],
+      i: [2.48599187, 0.00193609],
+      L: [49.95424423, 1222.49362201],
+      peri: [92.59887831, -0.41897216],
+      node: [113.66242448, -0.28867794],
+    },
   },
   {
-    id: "uranus", name: "天王星 Uranus", texture: "textures/2k_uranus.jpg",
-    radius: 7.5, rotationHours: -17.24, axialTilt: 97.77,
+    id: "uranus",
+    name: "天王星 Uranus",
+    texture: "textures/2k_uranus.jpg",
+    radius: 7.5,
+    rotationHours: -17.24,
+    axialTilt: 97.77,
     rings: [
       { inner: 1.64, outer: 1.67, color: 0x667174, opacity: 0.19 },
       { inner: 1.72, outer: 1.75, color: 0x69777a, opacity: 0.2 },
       { inner: 1.84, outer: 1.87, color: 0x718083, opacity: 0.2 },
-      { inner: 1.96, outer: 2.01, color: 0x7c8b8e, opacity: 0.24 }
+      { inner: 1.96, outer: 2.01, color: 0x7c8b8e, opacity: 0.24 },
     ],
     elements: {
-      a: [19.18916464, -0.00196176], e: [0.04725744, -0.00004397], i: [0.77263783, -0.00242939],
-      L: [313.23810451, 428.48202785], peri: [170.95427630, 0.40805281], node: [74.01692503, 0.04240589]
-    }
+      a: [19.18916464, -0.00196176],
+      e: [0.04725744, -0.00004397],
+      i: [0.77263783, -0.00242939],
+      L: [313.23810451, 428.48202785],
+      peri: [170.9542763, 0.40805281],
+      node: [74.01692503, 0.04240589],
+    },
   },
   {
-    id: "neptune", name: "海王星 Neptune", texture: "textures/2k_neptune.jpg",
-    radius: 7.3, rotationHours: 16.11, axialTilt: 28.32,
+    id: "neptune",
+    name: "海王星 Neptune",
+    texture: "textures/2k_neptune.jpg",
+    radius: 7.3,
+    rotationHours: 16.11,
+    axialTilt: 28.32,
     rings: [
       { inner: 1.65, outer: 1.69, color: 0x53617b, opacity: 0.08 },
       { inner: 2.1, outer: 2.15, color: 0x596984, opacity: 0.11 },
-      { inner: 2.5, outer: 2.55, color: 0x61728f, opacity: 0.15 }
+      { inner: 2.5, outer: 2.55, color: 0x61728f, opacity: 0.15 },
     ],
     elements: {
-      a: [30.06992276, 0.00026291], e: [0.00859048, 0.00005105], i: [1.77004347, 0.00035372],
-      L: [-55.12002969, 218.45945325], peri: [44.96476227, -0.32241464], node: [131.78422574, -0.00508664]
-    }
-  }
+      a: [30.06992276, 0.00026291],
+      e: [0.00859048, 0.00005105],
+      i: [1.77004347, 0.00035372],
+      L: [-55.12002969, 218.45945325],
+      peri: [44.96476227, -0.32241464],
+      node: [131.78422574, -0.00508664],
+    },
+  },
 ];
 
 /** Convert a JavaScript date to a Julian date. */
@@ -109,15 +174,16 @@ function atCentury([base, rate], centuries) {
 
 /** Keep an angle in the stable -180° to 180° range. */
 function normalizeDegrees(value) {
-  return ((value + 180) % 360 + 360) % 360 - 180;
+  return ((((value + 180) % 360) + 360) % 360) - 180;
 }
 
 /** Solve M = E - e sin(E) with Newton iterations. */
 function solveEccentricAnomaly(meanAnomaly, eccentricity) {
   let eccentricAnomaly = meanAnomaly + eccentricity * Math.sin(meanAnomaly);
   for (let iteration = 0; iteration < 12; iteration += 1) {
-    const delta = (meanAnomaly - eccentricAnomaly + eccentricity * Math.sin(eccentricAnomaly))
-      / (1 - eccentricity * Math.cos(eccentricAnomaly));
+    const delta =
+      (meanAnomaly - eccentricAnomaly + eccentricity * Math.sin(eccentricAnomaly)) /
+      (1 - eccentricity * Math.cos(eccentricAnomaly));
     eccentricAnomaly += delta;
     if (Math.abs(delta) < 1e-10) break;
   }
@@ -161,7 +227,7 @@ function orbitalElementsAt(planet, julianDate) {
     inclination: atCentury(source.i, centuries) * DEG,
     meanLongitude: atCentury(source.L, centuries),
     longitudePerihelion: atCentury(source.peri, centuries),
-    longitudeNode: atCentury(source.node, centuries)
+    longitudeNode: atCentury(source.node, centuries),
   };
 }
 
@@ -177,10 +243,12 @@ function orbitalPointToWorld(xPrime, yPrime, elements, target = new THREE.Vector
   const cosInclination = Math.cos(inclination);
   const sinInclination = Math.sin(inclination);
 
-  const eclipticX = (cosOmega * cosNode - sinOmega * sinNode * cosInclination) * xPrime
-    + (-sinOmega * cosNode - cosOmega * sinNode * cosInclination) * yPrime;
-  const eclipticY = (cosOmega * sinNode + sinOmega * cosNode * cosInclination) * xPrime
-    + (-sinOmega * sinNode + cosOmega * cosNode * cosInclination) * yPrime;
+  const eclipticX =
+    (cosOmega * cosNode - sinOmega * sinNode * cosInclination) * xPrime +
+    (-sinOmega * cosNode - cosOmega * sinNode * cosInclination) * yPrime;
+  const eclipticY =
+    (cosOmega * sinNode + sinOmega * cosNode * cosInclination) * xPrime +
+    (-sinOmega * sinNode + cosOmega * cosNode * cosInclination) * yPrime;
   const eclipticZ = sinOmega * sinInclination * xPrime + cosOmega * sinInclination * yPrime;
 
   return target.set(eclipticX, eclipticZ, -eclipticY);
@@ -204,7 +272,7 @@ function createOrbitLine(planet, julianDate) {
   const semiminor = semimajor * Math.sqrt(1 - elements.e ** 2);
   const points = [];
   for (let segment = 0; segment < 360; segment += 1) {
-    const eccentricAnomaly = segment / 360 * Math.PI * 2;
+    const eccentricAnomaly = (segment / 360) * Math.PI * 2;
     const xPrime = semimajor * (Math.cos(eccentricAnomaly) - elements.e);
     const yPrime = semiminor * Math.sin(eccentricAnomaly);
     points.push(orbitalPointToWorld(xPrime, yPrime, elements));
@@ -214,7 +282,7 @@ function createOrbitLine(planet, julianDate) {
     color: 0x7890c8,
     transparent: true,
     opacity: planet.id === "earth" ? 0.24 : 0.15,
-    depthWrite: false
+    depthWrite: false,
   });
   const line = new THREE.LineLoop(geometry, material);
   line.name = `${planet.id}-orbit`;
@@ -243,13 +311,15 @@ function createSunGlow() {
   context.fillStyle = gradient;
   context.fillRect(0, 0, 256, 256);
 
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: new THREE.CanvasTexture(canvas),
-    color: 0xffffff,
-    transparent: true,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false
-  }));
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({
+      map: new THREE.CanvasTexture(canvas),
+      color: 0xffffff,
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    }),
+  );
   sprite.scale.setScalar(105);
   return sprite;
 }
@@ -267,23 +337,22 @@ function createAsteroidBelt() {
     const longitude = random() * Math.PI * 2;
     const latitude = THREE.MathUtils.clamp(randomNormal(random) * 4 * DEG, -12 * DEG, 12 * DEG);
     const planarRadius = radius * Math.cos(latitude);
-    positions.push(
-      planarRadius * Math.cos(longitude),
-      radius * Math.sin(latitude),
-      planarRadius * Math.sin(longitude)
-    );
+    positions.push(planarRadius * Math.cos(longitude), radius * Math.sin(latitude), planarRadius * Math.sin(longitude));
   }
 
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  const belt = new THREE.Points(geometry, new THREE.PointsMaterial({
-    color: 0xc4a57b,
-    size: 0.7,
-    sizeAttenuation: true,
-    transparent: true,
-    opacity: 0.42,
-    depthWrite: false
-  }));
+  const belt = new THREE.Points(
+    geometry,
+    new THREE.PointsMaterial({
+      color: 0xc4a57b,
+      size: 0.7,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.42,
+      depthWrite: false,
+    }),
+  );
   belt.name = "asteroid-belt-2.1-3.3-au";
   return belt;
 }
@@ -301,23 +370,22 @@ function createKuiperBelt() {
     const longitude = random() * Math.PI * 2;
     const latitude = THREE.MathUtils.clamp(randomNormal(random) * 6 * DEG, -20 * DEG, 20 * DEG);
     const planarRadius = radius * Math.cos(latitude);
-    positions.push(
-      planarRadius * Math.cos(longitude),
-      radius * Math.sin(latitude),
-      planarRadius * Math.sin(longitude)
-    );
+    positions.push(planarRadius * Math.cos(longitude), radius * Math.sin(latitude), planarRadius * Math.sin(longitude));
   }
 
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  const belt = new THREE.Points(geometry, new THREE.PointsMaterial({
-    color: 0x9cafcf,
-    size: 0.9,
-    sizeAttenuation: true,
-    transparent: true,
-    opacity: 0.34,
-    depthWrite: false
-  }));
+  const belt = new THREE.Points(
+    geometry,
+    new THREE.PointsMaterial({
+      color: 0x9cafcf,
+      size: 0.9,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.34,
+      depthWrite: false,
+    }),
+  );
   belt.name = "kuiper-belt-30-55-au";
   return belt;
 }
@@ -336,23 +404,22 @@ function createOortCloud() {
     const longitude = random() * Math.PI * 2;
     const vertical = random() * 2 - 1;
     const planar = Math.sqrt(1 - vertical * vertical);
-    positions.push(
-      radius * planar * Math.cos(longitude),
-      radius * vertical,
-      radius * planar * Math.sin(longitude)
-    );
+    positions.push(radius * planar * Math.cos(longitude), radius * vertical, radius * planar * Math.sin(longitude));
   }
 
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  const cloud = new THREE.Points(geometry, new THREE.PointsMaterial({
-    color: 0xb7c9e8,
-    size: 1,
-    sizeAttenuation: false,
-    transparent: true,
-    opacity: 0.12,
-    depthWrite: false
-  }));
+  const cloud = new THREE.Points(
+    geometry,
+    new THREE.PointsMaterial({
+      color: 0xb7c9e8,
+      size: 1.8,
+      sizeAttenuation: false,
+      transparent: true,
+      opacity: 0.5,
+      depthWrite: false,
+    }),
+  );
   cloud.name = "oort-cloud-theoretical-2000-100000-au";
   return cloud;
 }
@@ -366,40 +433,35 @@ function createStarField() {
     const theta = random() * Math.PI * 2;
     const z = random() * 2 - 1;
     const planar = Math.sqrt(1 - z * z);
-    positions.push(
-      radius * planar * Math.cos(theta),
-      radius * z,
-      radius * planar * Math.sin(theta)
-    );
+    positions.push(radius * planar * Math.cos(theta), radius * z, radius * planar * Math.sin(theta));
   }
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  return new THREE.Points(geometry, new THREE.PointsMaterial({
-    color: 0xdde6ff,
-    size: 1.65,
-    sizeAttenuation: true,
-    transparent: true,
-    opacity: 0.82,
-    depthWrite: false,
-    fog: false
-  }));
+  return new THREE.Points(
+    geometry,
+    new THREE.PointsMaterial({
+      color: 0xdde6ff,
+      size: 1.65,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.82,
+      depthWrite: false,
+      fog: false,
+    }),
+  );
 }
 
 /** Add physically subdued ring bands in a planet's equatorial plane. */
 function addRingBands(parent, planet) {
   for (const band of planet.rings ?? []) {
-    const geometry = new THREE.RingGeometry(
-      planet.radius * band.inner,
-      planet.radius * band.outer,
-      192
-    );
+    const geometry = new THREE.RingGeometry(planet.radius * band.inner, planet.radius * band.outer, 192);
     geometry.rotateX(-Math.PI / 2);
     const material = new THREE.MeshBasicMaterial({
       color: band.color,
       side: THREE.DoubleSide,
       transparent: true,
       opacity: band.opacity,
-      depthWrite: false
+      depthWrite: false,
     });
     const ring = new THREE.Mesh(geometry, material);
     ring.renderOrder = 1;
@@ -414,10 +476,7 @@ function createPlanetObject(planet, textureLoader, labelsRoot, julianDate) {
 
   const orbitalNormal = orbitNormalAt(planet, julianDate);
   const orbitAlignment = new THREE.Quaternion().setFromUnitVectors(ECLIPTIC_NORMAL, orbitalNormal);
-  const axialRotation = new THREE.Quaternion().setFromAxisAngle(
-    new THREE.Vector3(0, 0, 1),
-    planet.axialTilt * DEG
-  );
+  const axialRotation = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), planet.axialTilt * DEG);
   body.quaternion.copy(orbitAlignment).multiply(axialRotation);
 
   const texture = textureLoader.load(planet.texture);
@@ -425,7 +484,7 @@ function createPlanetObject(planet, textureLoader, labelsRoot, julianDate) {
   texture.anisotropy = 8;
   const sphere = new THREE.Mesh(
     new THREE.SphereGeometry(planet.radius, 48, 32),
-    new THREE.MeshStandardMaterial({ map: texture, roughness: 0.9, metalness: 0 })
+    new THREE.MeshStandardMaterial({ map: texture, roughness: 0.9, metalness: 0 }),
   );
   body.add(sphere);
 
@@ -441,8 +500,8 @@ function createPlanetObject(planet, textureLoader, labelsRoot, julianDate) {
         transparent: true,
         opacity: 0.22,
         blending: THREE.AdditiveBlending,
-        depthWrite: false
-      })
+        depthWrite: false,
+      }),
     );
     body.add(clouds);
   }
@@ -482,7 +541,7 @@ function initSolarSystem() {
   const renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: true,
-    powerPreference: "high-performance"
+    powerPreference: "high-performance",
   });
   renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -501,7 +560,7 @@ function initSolarSystem() {
   controls.rotateSpeed = 0.48;
   controls.zoomSpeed = 0.72;
   controls.minDistance = 72;
-  controls.maxDistance = 1800;
+  controls.maxDistance = 2700;
   controls.minPolarAngle = 0.08;
   controls.maxPolarAngle = Math.PI - 0.08;
   controls.target.set(0, 0, 0);
@@ -509,19 +568,19 @@ function initSolarSystem() {
 
   // OrbitControls receives wheel input on the full-viewport canvas. This
   // document handler also covers the small linked overlay region.
-  document.addEventListener("wheel", (event) => {
-    event.preventDefault();
-    if (event.target === renderer.domElement) return;
-    const offset = camera.position.clone().sub(controls.target);
-    const factor = Math.exp(event.deltaY * 0.001);
-    const distance = THREE.MathUtils.clamp(
-      offset.length() * factor,
-      controls.minDistance,
-      controls.maxDistance
-    );
-    camera.position.copy(controls.target).add(offset.setLength(distance));
-    controls.update();
-  }, { passive: false });
+  document.addEventListener(
+    "wheel",
+    (event) => {
+      event.preventDefault();
+      if (event.target === renderer.domElement) return;
+      const offset = camera.position.clone().sub(controls.target);
+      const factor = Math.exp(event.deltaY * 0.001);
+      const distance = THREE.MathUtils.clamp(offset.length() * factor, controls.minDistance, controls.maxDistance);
+      camera.position.copy(controls.target).add(offset.setLength(distance));
+      controls.update();
+    },
+    { passive: false },
+  );
 
   const asteroidBelt = createAsteroidBelt();
   const kuiperBelt = createKuiperBelt();
@@ -542,10 +601,7 @@ function initSolarSystem() {
 
   const sunTexture = textureLoader.load("textures/2k_sun.jpg");
   sunTexture.colorSpace = THREE.SRGBColorSpace;
-  const sun = new THREE.Mesh(
-    new THREE.SphereGeometry(19, 64, 40),
-    new THREE.MeshBasicMaterial({ map: sunTexture })
-  );
+  const sun = new THREE.Mesh(new THREE.SphereGeometry(19, 64, 40), new THREE.MeshBasicMaterial({ map: sunTexture }));
   scene.add(sun, createSunGlow());
 
   const initialJulianDate = toJulianDate(new Date());
@@ -574,22 +630,14 @@ function initSolarSystem() {
     createRegionLabel(
       labelsRoot,
       "小行星带 · 2.1–3.3 AU",
-      new THREE.Vector3(
-        asteroidRadius * Math.cos(asteroidAngle),
-        8,
-        asteroidRadius * Math.sin(asteroidAngle)
-      )
+      new THREE.Vector3(asteroidRadius * Math.cos(asteroidAngle), 8, asteroidRadius * Math.sin(asteroidAngle)),
     ),
     createRegionLabel(
       labelsRoot,
       "柯伊伯带 · 30–55 AU",
-      new THREE.Vector3(
-        kuiperRadius * Math.cos(kuiperAngle),
-        26,
-        kuiperRadius * Math.sin(kuiperAngle)
-      )
+      new THREE.Vector3(kuiperRadius * Math.cos(kuiperAngle), 26, kuiperRadius * Math.sin(kuiperAngle)),
     ),
-    createRegionLabel(labelsRoot, "奥尔特云 · 理论模型", oortLabelPosition)
+    createRegionLabel(labelsRoot, "奥尔特云 · 理论模型", oortLabelPosition),
   ];
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -621,13 +669,34 @@ function initSolarSystem() {
     if (!reducedMotion) simulatedSeconds += delta;
     const julianDate = initialJulianDate + simulatedSeconds * SIMULATED_DAYS_PER_SECOND;
 
+    // 更新各区域带透明度：相机距离越远，越清晰
+    const cameraDistance = camera.position.length();
+
+    // 小行星带 (2.1-3.3 AU, 显示半径约 200-220)
+    const asteroidInnerRadius = displaySemimajorAxis(2.1);
+    const asteroidOpacity = THREE.MathUtils.clamp((cameraDistance - 100) / (asteroidInnerRadius - 100), 0.2, 1);
+    asteroidBelt.material.opacity = asteroidOpacity;
+    if (!reducedMotion) asteroidBelt.rotation.y += delta * 0.012;
+
+    // 柯伊伯带 (30-55 AU, 显示半径约 320-350)
+    const kuiperInnerRadius = displaySemimajorAxis(30);
+    const kuiperOpacity = THREE.MathUtils.clamp((cameraDistance - 200) / (kuiperInnerRadius - 200), 0.15, 1);
+    kuiperBelt.material.opacity = kuiperOpacity;
+    if (!reducedMotion) kuiperBelt.rotation.y += delta * 0.008;
+
+    // 奥尔特云 (2000-100000 AU, 显示半径约 695-993)
+    const oortInnerRadius = displaySemimajorAxis(2000);
+    const oortOpacity = THREE.MathUtils.clamp((cameraDistance - 400) / (oortInnerRadius - 400), 0.15, 1);
+    oortCloud.material.opacity = oortOpacity;
+    if (!reducedMotion) oortCloud.rotation.y += delta * 0.003;
+
     for (const object of bodies) {
       object.body.position.copy(planetPositionAt(object.data, julianDate));
       if (!reducedMotion) {
         const rotationDirection = Math.sign(object.data.rotationHours);
         const rotationPeriod = Math.abs(object.data.rotationHours) / ROTATION_HOURS_PER_SECOND;
-        object.sphere.rotation.y += rotationDirection * delta * Math.PI * 2 / rotationPeriod;
-        if (object.clouds) object.clouds.rotation.y += delta * Math.PI * 2 / (rotationPeriod * 0.93);
+        object.sphere.rotation.y += (rotationDirection * delta * Math.PI * 2) / rotationPeriod;
+        if (object.clouds) object.clouds.rotation.y += (delta * Math.PI * 2) / (rotationPeriod * 0.93);
       }
     }
 
