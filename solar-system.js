@@ -254,6 +254,40 @@ function createSunGlow() {
   return sprite;
 }
 
+/** Build the main asteroid belt between Mars and Jupiter (2.1–3.3 AU). */
+function createAsteroidBelt() {
+  const random = createSeededRandom(0x41535445);
+  const positions = [];
+  const particleCount = 3600;
+
+  for (let index = 0; index < particleCount; index += 1) {
+    // Main belt range 2.1–3.3 AU with concentration around 2.7 AU
+    const astronomicalUnits = 2.1 + random() * 1.2;
+    const radius = displaySemimajorAxis(astronomicalUnits);
+    const longitude = random() * Math.PI * 2;
+    const latitude = THREE.MathUtils.clamp(randomNormal(random) * 4 * DEG, -12 * DEG, 12 * DEG);
+    const planarRadius = radius * Math.cos(latitude);
+    positions.push(
+      planarRadius * Math.cos(longitude),
+      radius * Math.sin(latitude),
+      planarRadius * Math.sin(longitude)
+    );
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  const belt = new THREE.Points(geometry, new THREE.PointsMaterial({
+    color: 0xc4a57b,
+    size: 0.7,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: 0.42,
+    depthWrite: false
+  }));
+  belt.name = "asteroid-belt-2.1-3.3-au";
+  return belt;
+}
+
 /** Build the flattened 30–55 AU population beyond Neptune. */
 function createKuiperBelt() {
   const random = createSeededRandom(0x4b554950);
@@ -489,9 +523,10 @@ function initSolarSystem() {
     controls.update();
   }, { passive: false });
 
+  const asteroidBelt = createAsteroidBelt();
   const kuiperBelt = createKuiperBelt();
   const oortCloud = createOortCloud();
-  scene.add(createStarField(), kuiperBelt, oortCloud);
+  scene.add(createStarField(), asteroidBelt, kuiperBelt, oortCloud);
   scene.add(new THREE.AmbientLight(0x7183b4, 0.18));
   scene.add(new THREE.PointLight(0xffd2a0, 52000, 0, 2));
 
@@ -524,15 +559,27 @@ function initSolarSystem() {
   }
   app.dataset.planetCount = String(bodies.length);
   app.dataset.orbitModel = "jpl-j2000-keplerian";
+  app.dataset.asteroidBelt = "2.1-3.3-au";
   app.dataset.kuiperBelt = "30-55-au";
   app.dataset.oortCloud = "theoretical-2000-100000-au";
 
+  const asteroidRadius = displaySemimajorAxis(2.7);
+  const asteroidAngle = 0.85;
   const kuiperRadius = displaySemimajorAxis(52);
   const kuiperAngle = 2.45;
   const oortLabelPosition = new THREE.Vector3(-0.68, 0.56, -0.48)
     .normalize()
     .multiplyScalar(displaySemimajorAxis(3500));
   const regionLabels = [
+    createRegionLabel(
+      labelsRoot,
+      "小行星带 · 2.1–3.3 AU",
+      new THREE.Vector3(
+        asteroidRadius * Math.cos(asteroidAngle),
+        8,
+        asteroidRadius * Math.sin(asteroidAngle)
+      )
+    ),
     createRegionLabel(
       labelsRoot,
       "柯伊伯带 · 30–55 AU",
