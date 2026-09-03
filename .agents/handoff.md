@@ -1,5 +1,18 @@
 # 交接记录
 
+# 2026-09-04 · 设置网站 favicon
+
+### 完成内容
+- ✓ 在 `index.html` 的 `<head>` 中声明 `evanpatchouli.space.logo.png` 为 PNG favicon。
+- ✓ 图片文件位于项目根目录，引用路径为 `./evanpatchouli.space.logo.png`。
+
+### 验证结果
+- ✓ favicon 声明已被静态检索确认。
+- ✓ 图片文件存在，大小为 295665 bytes。
+- ✓ `git diff --check` 通过，修改文件为 UTF-8 无 BOM。
+
+---
+
 # 2026-09-04 · 修复备案号链接无法点击
 
 ### 完成内容
