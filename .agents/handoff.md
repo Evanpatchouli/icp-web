@@ -1,5 +1,18 @@
 # 交接记录
 
+# 2026-09-04 · 修复备案号链接无法点击
+
+### 完成内容
+- ✓ 为 `.footer a` 设置 `pointer-events: auto`，恢复“浙ICP备2026072183号”的点击能力。
+- ✓ 保留 `.footer` 的 `pointer-events: none`，避免页脚背景拦截三维场景交互。
+
+### 验证结果
+- ✓ `git diff --check` 通过。
+- ✓ `index.html` 与任务记录均为 UTF-8 无 BOM。
+- ✓ 备案链接仍指向 `https://beian.miit.gov.cn/`。
+
+---
+
 ## 2026-08-27 · 柯伊伯带与奥尔特云
 
 ### 完成内容
