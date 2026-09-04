@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Evan Patchouli Space —— 一场关于星空的动态展示。" />
+    <meta
+      name="description"
+      content="Evan Patchouli Space —— 一场关于星空的动态展示。"
+    />
     <link rel="icon" type="image/png" href="./favicon.png" />
     <title>Evan Patchouli Space</title>
     <style>
@@ -27,12 +30,25 @@
         overflow: hidden;
         overscroll-behavior: none;
         background:
-          radial-gradient(ellipse 120% 90% at 50% 110%, #1a1040 0%, transparent 55%),
-          radial-gradient(ellipse 90% 70% at 85% 10%, #0d1b4a 0%, transparent 50%),
-          radial-gradient(ellipse 80% 60% at 10% 20%, #160a33 0%, transparent 45%),
+          radial-gradient(
+            ellipse 120% 90% at 50% 110%,
+            #1a1040 0%,
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse 90% 70% at 85% 10%,
+            #0d1b4a 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse 80% 60% at 10% 20%,
+            #160a33 0%,
+            transparent 45%
+          ),
           linear-gradient(180deg, var(--bg-mid) 0%, var(--bg-deep) 70%);
         color: var(--text-main);
-        font-family: Inter, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+        font-family:
+          Inter, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
       }
 
       #app,
@@ -76,7 +92,12 @@
         font-weight: 200;
         letter-spacing: 0.35em;
         text-indent: 0.35em;
-        background: linear-gradient(120deg, #ffffff 20%, #9db9ff 50%, #ffffff 80%);
+        background: linear-gradient(
+          120deg,
+          #ffffff 20%,
+          #9db9ff 50%,
+          #ffffff 80%
+        );
         background-size: 200% auto;
         -webkit-background-clip: text;
         background-clip: text;
@@ -151,6 +172,17 @@
 
       .footer a {
         pointer-events: auto;
+      }
+
+      .footer .gov-net-beian {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        pointer-events: auto;
+      }
+
+      .footer .gov-net-beian img {
+        height: 12px;
       }
 
       .footer .credit {
@@ -265,8 +297,14 @@
       </div>
 
       <p class="scale-note">
-        轨道形状、倾角、方向及相对周期依据 JPL 轨道根数；为便于观察，轨道间距与天体尺寸采用不同的可视化比例。
-        <a href="https://ssd.jpl.nasa.gov/planets/approx_pos.html" target="_blank" rel="noreferrer">数据说明</a>
+        轨道形状、倾角、方向及相对周期依据 JPL
+        轨道根数；为便于观察，轨道间距与天体尺寸采用不同的可视化比例。
+        <a
+          href="https://ssd.jpl.nasa.gov/planets/approx_pos.html"
+          target="_blank"
+          rel="noreferrer"
+          >数据说明</a
+        >
       </p>
 
       <p class="interaction-hint">拖拽旋转视角<br />滚轮缩放距离</p>
@@ -275,15 +313,28 @@
 
     <div class="footer">
       © 2026 Evan Patchouli Space&nbsp;&nbsp;|&nbsp;&nbsp;
-      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer">浙ICP备2026072183号</a>
-      <span class="credit">Planet textures: Solar System Scope (CC BY 4.0), based on NASA/JPL imagery</span>
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer"
+        >浙ICP备2026072183号</a
+      >
+      <span class="gov-net-beian">
+        <img class="guohui-pic" src="./guohui.png" />
+        浙公网安备33010902005098号
+      </span>
+      <span class="credit"
+        >Planet textures: Solar System Scope (CC BY 4.0), based on NASA/JPL
+        imagery</span
+      >
     </div>
 
     <noscript>此页面需要启用 JavaScript 才能显示三维太阳系。</noscript>
     <script>
       // 副标题轮换
       (function () {
-        const subtitles = ["一 方 星 空 · 静 待 启 程", "仰 望 星 空 · 跬 步 千 里", "星 河 烂 漫 · 不 尽 于 此"];
+        const subtitles = [
+          "一 方 星 空 · 静 待 启 程",
+          "仰 望 星 空 · 跬 步 千 里",
+          "星 河 烂 漫 · 不 尽 于 此",
+        ];
         let currentIndex = 0;
         const subtitleElement = document.getElementById("subtitle");
         let firstChange = true;
